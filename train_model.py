@@ -22,7 +22,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
 
 ROOT = Path(__file__).resolve().parent
-DATA_FILE = ROOT / "data" / "emails.csv"
+DATA_FILE = ROOT / "data" / "kaggle_emails.csv"
 MODEL_FILE = ROOT / "models" / "fake_email_detector.joblib"
 
 
@@ -127,7 +127,7 @@ def train() -> dict:
     best_name = max(scores, key=scores.get)
     best_model = trained[best_name]
     MODEL_FILE.parent.mkdir(exist_ok=True)
-    artifact = {"model": best_model, "model_name": best_name, "accuracies": scores,
+    artifact = {"dataset_version": "kaggle-ceas08-v1", "model": best_model, "model_name": best_name, "accuracies": scores,
                 "models": trained,
                 "source": source, "training_rows": len(df),
                 "report": classification_report(y_test, best_model.predict(X_test), output_dict=True, zero_division=0)}

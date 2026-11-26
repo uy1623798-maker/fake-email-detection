@@ -5,4 +5,5 @@ __pycache__/
 models/*.joblib
 !models/.gitkeep
 data/*.csv
+data/*.zip
 !data/.gitkeep

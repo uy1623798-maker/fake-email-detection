@@ -24,7 +24,7 @@ streamlit run app.py
 
 ## Add your dataset
 
-The project includes `data/emails.csv` with `text,label` columns (`ham` for legitimate and `spam` for suspicious). The included starter dataset is small and intended to demonstrate the workflow. Replace it with a larger labelled dataset for meaningful results. Supported labels include `ham`/`legitimate`/`0` and `spam`/`phishing`/`1`.
+The project uses `data/kaggle_emails.csv`, a balanced sample of 5,000 emails from CEAS_08 in the [Kaggle Phishing Email Dataset](https://www.kaggle.com/datasets/naserabdullahalam/phishing-email-dataset). Exact text duplicates are removed before sampling. The held-out split measures performance on this corpus; related messages and source-specific patterns can still inflate scores, and performance on other emails may differ. Supported labels include `ham`/`legitimate`/`0` and `spam`/`phishing`/`1`.
 
 ## Notebook
 

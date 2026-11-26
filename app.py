@@ -41,7 +41,10 @@ st.markdown("""
 def load_artifact():
     if not MODEL_FILE.exists():
         return train()
-    return joblib.load(MODEL_FILE)
+    artifact = joblib.load(MODEL_FILE)
+    if artifact.get("dataset_version") != "kaggle-ceas08-v1":
+        return train()
+    return artifact
 
 artifact = load_artifact()
 
@@ -57,7 +60,7 @@ with st.sidebar:
         artifact = train()
         st.cache_resource.clear()
         st.success("Models retrained successfully.")
-    st.caption("Starter dataset is small; use a larger labelled dataset for realistic accuracy.")
+    st.caption("Dataset: balanced CEAS_08 sample from Kaggle. Results may vary on new emails.")
 
 left, right = st.columns([1.25, 1])
 with left:
@@ -109,10 +112,10 @@ for row_start in range(0, len(accuracy_items), 4):
 
 with st.expander("How this system works"):
     st.markdown("""
-1. The labelled `data/emails.csv` dataset is split into training and test portions.
+1. The labelled Kaggle CEAS_08 email dataset is split into training and test portions.
 2. Email text is converted into TF-IDF features.
 3. Fourteen commonly used supervised text classifiers are trained and compared on the same split.
 4. Select any model above to classify the pasted email.
 
-The included starter dataset is small, so its scores demonstrate the workflow rather than real-world performance.
+Accuracy on this dataset does not guarantee performance on new emails.
 """)
