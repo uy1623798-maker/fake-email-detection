@@ -5,10 +5,12 @@ A Streamlit application that classifies email text as likely legitimate or suspi
 ## Models
 
 - Logistic Regression
-- Multinomial Naive Bayes
-- Linear SVM
+- Multinomial, Complement, and Bernoulli Naive Bayes
+- Linear SVM and RBF SVM
+- SGD, Passive Aggressive, Perceptron, and Ridge classifiers
+- Decision Tree, Random Forest, Extra Trees, and K-Nearest Neighbors
 
-The training process holds out 25% of the data, reports each model's accuracy, and stores the best model in `models/fake_email_detector.joblib`.
+The training process uses a stratified 25% held-out test split, reports each model's accuracy, and stores all fitted models plus the best model in `models/fake_email_detector.joblib`. These are common supervised classifiers suitable for comparison on text data; there is no finite list of every supervised algorithm. Small datasets produce unstable accuracy estimates.
 
 ## Run it
 

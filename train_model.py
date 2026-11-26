@@ -10,12 +10,16 @@ from pathlib import Path
 import joblib
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import ExtraTreesClassifier, RandomForestClassifier
+from sklearn.linear_model import (LogisticRegression, PassiveAggressiveClassifier,
+                                  Perceptron, RidgeClassifier, SGDClassifier)
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.model_selection import train_test_split
-from sklearn.naive_bayes import MultinomialNB
+from sklearn.naive_bayes import BernoulliNB, ComplementNB, MultinomialNB
 from sklearn.pipeline import Pipeline
-from sklearn.svm import LinearSVC
+from sklearn.svm import LinearSVC, SVC
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.neighbors import KNeighborsClassifier
 
 ROOT = Path(__file__).resolve().parent
 DATA_FILE = ROOT / "data" / "emails.csv"
@@ -85,16 +89,32 @@ def load_data() -> tuple[pd.DataFrame, str]:
     return cleaned, str(DATA_FILE)
 
 
+def build_candidates() -> dict:
+    """Common supervised classifiers that can train on sparse TF-IDF text."""
+    return {
+        "Logistic Regression": LogisticRegression(max_iter=2000, class_weight="balanced"),
+        "Multinomial Naive Bayes": MultinomialNB(),
+        "Complement Naive Bayes": ComplementNB(),
+        "Bernoulli Naive Bayes": BernoulliNB(),
+        "Linear SVM": LinearSVC(class_weight="balanced"),
+        "RBF SVM": SVC(kernel="rbf", class_weight="balanced"),
+        "SGD Classifier": SGDClassifier(loss="hinge", max_iter=2000, tol=1e-3, class_weight="balanced", random_state=42),
+        "Passive Aggressive": PassiveAggressiveClassifier(max_iter=2000, class_weight="balanced", random_state=42),
+        "Perceptron": Perceptron(max_iter=2000, class_weight="balanced", random_state=42),
+        "Ridge Classifier": RidgeClassifier(class_weight="balanced"),
+        "Decision Tree": DecisionTreeClassifier(class_weight="balanced", random_state=42),
+        "Random Forest": RandomForestClassifier(n_estimators=150, class_weight="balanced", random_state=42, n_jobs=-1),
+        "Extra Trees": ExtraTreesClassifier(n_estimators=150, class_weight="balanced", random_state=42, n_jobs=-1),
+        "K-Nearest Neighbors": KNeighborsClassifier(n_neighbors=3, metric="cosine", algorithm="brute", n_jobs=-1),
+    }
+
+
 def train() -> dict:
     df, source = load_data()
     X_train, X_test, y_train, y_test = train_test_split(
         df["text"], df["label"], test_size=0.25, random_state=42, stratify=df["label"]
     )
-    candidates = {
-        "Logistic Regression": LogisticRegression(max_iter=2000, class_weight="balanced"),
-        "Multinomial Naive Bayes": MultinomialNB(),
-        "Linear SVM": LinearSVC(class_weight="balanced"),
-    }
+    candidates = build_candidates()
     scores, trained = {}, {}
     for name, classifier in candidates.items():
         pipeline = Pipeline([

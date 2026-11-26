@@ -53,9 +53,13 @@ with st.sidebar:
         st.success("Models retrained successfully.")
     st.caption("Starter dataset is small; use a larger labelled dataset for realistic accuracy.")
 
-metric_cols = st.columns(3)
-for col, (name, score) in zip(metric_cols, artifact["accuracies"].items()):
-    col.metric(name, f"{score:.2f}%", "held-out test accuracy")
+st.subheader("Supervised model accuracy")
+st.caption(f"{len(artifact['accuracies'])} algorithms trained on the same held-out 25% test split.")
+accuracy_items = list(artifact["accuracies"].items())
+for row_start in range(0, len(accuracy_items), 4):
+    metric_cols = st.columns(4)
+    for col, (name, score) in zip(metric_cols, accuracy_items[row_start:row_start + 4]):
+        col.metric(name, f"{score:.2f}%", "test accuracy")
 
 left, right = st.columns([1.25, 1])
 with left:
@@ -70,11 +74,12 @@ with left:
         check = st.form_submit_button("Check email", type="primary", use_container_width=True)
 
 with right:
-    st.subheader("Model accuracy comparison")
+    st.subheader("All model results")
     accuracy_frame = __import__("pandas").DataFrame(
         {"Algorithm": list(artifact["accuracies"].keys()), "Accuracy (%)": list(artifact["accuracies"].values())}
-    ).set_index("Algorithm")
-    st.bar_chart(accuracy_frame, horizontal=True, color="#3978c5")
+    ).sort_values("Accuracy (%)", ascending=False).set_index("Algorithm")
+    st.bar_chart(accuracy_frame, horizontal=True, color="#3978c5", height=480)
+    st.dataframe(accuracy_frame.style.format("{:.2f}%"), use_container_width=True)
     st.caption("Accuracy is measured on the held-out 25% test split from the CSV dataset.")
 
 if check:
@@ -93,7 +98,7 @@ with st.expander("How this system works"):
     st.markdown("""
 1. The labelled `data/emails.csv` dataset is split into training and test portions.
 2. Email text is converted into TF-IDF features.
-3. Logistic Regression, Multinomial Naive Bayes, and Linear SVM are trained and compared.
+3. Fourteen commonly used supervised text classifiers are trained and compared on the same split.
 4. Select any model above to classify the pasted email.
 
 The included starter dataset is small, so its scores demonstrate the workflow rather than real-world performance.
