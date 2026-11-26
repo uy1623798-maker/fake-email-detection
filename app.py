@@ -8,10 +8,26 @@ from train_model import MODEL_FILE, train
 st.set_page_config(page_title="EmailShield | Fake Email Detector", page_icon="✉️", layout="wide")
 st.markdown("""
 <style>
-  .stApp { background: linear-gradient(145deg, #f5f8ff 0%, #f8fafc 55%, #eef5ff 100%); }
-  h1 { color: #12315b; letter-spacing: -0.04em; }
-  [data-testid="stMetric"] { background: white; border: 1px solid #e1e9f5; border-radius: 14px; padding: 14px 18px; box-shadow: 0 4px 18px #19375b0a; }
-  .stButton button[kind="primary"] { border-radius: 10px; font-weight: 700; }
+  :root { --ink: #142a43; --muted: #64748b; --blue: #2563eb; --line: #e4ebf4; }
+  .stApp { background: radial-gradient(ellipse at 12% 0%, #e6efff 0, transparent 38%), #f6f8fc; color: var(--ink); }
+  [data-testid="stHeader"] { background: transparent; }
+  [data-testid="stMainBlockContainer"] { padding-top: 2.2rem; max-width: 1320px; }
+  h1 { color: var(--ink); letter-spacing: -.045em; font-weight: 800; }
+  h2, h3 { color: #1e3552; letter-spacing: -.025em; }
+  [data-testid="stCaptionContainer"] { color: var(--muted); }
+  [data-testid="stMetric"] { background: rgba(255,255,255,.92); border: 1px solid var(--line); border-radius: 18px; padding: 17px 20px; box-shadow: 0 8px 26px #18365a0b; }
+  [data-testid="stMetricLabel"] { color: var(--muted); font-weight: 650; }
+  [data-testid="stMetricValue"] { color: var(--blue); font-weight: 800; }
+  [data-testid="stForm"] { background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 20px; box-shadow: 0 12px 34px #18365a0c; }
+  [data-testid="stTextArea"] textarea { border-radius: 12px; border-color: #d8e1ed; background: #fbfdff; }
+  [data-testid="stTextArea"] textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 2px #2563eb20; }
+  .stButton button[kind="primary"] { border-radius: 12px; min-height: 2.8rem; font-weight: 750; box-shadow: 0 5px 14px #2563eb28; }
+  [data-testid="stSidebar"] { background: #101d31; }
+  [data-testid="stSidebar"] * { color: #e7eef9; }
+  [data-testid="stSidebar"] [data-testid="stCaptionContainer"] { color: #a9b8ce; }
+  [data-testid="stAlert"] { border-radius: 14px; }
+  [data-testid="stExpander"] { border-color: var(--line); border-radius: 14px; background: #ffffffb8; }
+  @media (max-width: 720px) { [data-testid="stMainBlockContainer"] { padding: 1.2rem 1rem 2rem; } [data-testid="stForm"] { padding: 14px; } }
 </style>
 """, unsafe_allow_html=True)
 
