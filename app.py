@@ -73,6 +73,24 @@ with left:
                                     index=list(artifact["accuracies"].keys()).index(artifact["model_name"]))
         check = st.form_submit_button("Check email", type="primary", use_container_width=True)
 
+    # Keep the verdict directly below the checker so users do not miss it
+    # beneath the longer model-comparison section.
+    if check:
+        st.markdown("---")
+        st.subheader("Email ka result")
+        if not email_text.strip():
+            st.info("Pehle upar email ka subject aur message paste karein, phir **Check email** dabayein.")
+        else:
+            prediction = int(artifact["models"][model_choice].predict([email_text])[0])
+            if prediction:
+                st.error("🚨 **Yeh email suspicious / fake lag rahi hai.**")
+                st.write(f"Selected model: **{model_choice}**")
+                st.warning("Link ya attachment na kholein. Sender ko official website ya known phone number se verify karein.")
+            else:
+                st.success("✅ **Yeh email likely genuine lag rahi hai.**")
+                st.write(f"Selected model: **{model_choice}**")
+                st.warning("Yeh sirf ML model ka estimate hai, safety guarantee nahi. Sender address aur links phir bhi check karein.")
+
 with right:
     st.subheader("All model results")
     accuracy_frame = __import__("pandas").DataFrame(
@@ -81,18 +99,6 @@ with right:
     st.bar_chart(accuracy_frame, horizontal=True, color="#3978c5", height=480)
     st.dataframe(accuracy_frame.style.format("{:.2f}%"), use_container_width=True)
     st.caption("Accuracy is measured on the held-out 25% test split from the CSV dataset.")
-
-if check:
-    if not email_text.strip():
-        st.info("Pehle email content paste karein.")
-    else:
-        prediction = int(artifact["models"][model_choice].predict([email_text])[0])
-        if prediction:
-            st.error(f"⚠️ {model_choice}: Likely suspicious / spam email")
-            st.write("Sender ko independently verify karein; links ya attachments kholne se pehle saavdhani rakhein.")
-        else:
-            st.success(f"✅ {model_choice}: Likely legitimate email")
-            st.write("Yeh model ka estimate hai; email safe hone ki guarantee nahi.")
 
 with st.expander("How this system works"):
     st.markdown("""
