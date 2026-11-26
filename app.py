@@ -40,7 +40,7 @@ def load_artifact():
 artifact = load_artifact()
 
 st.title("✉️ EmailShield")
-st.caption("Email ko check karein aur supervised ML models ki test accuracy compare karein.")
+st.caption("Check an email and compare the test accuracy of supervised machine learning models.")
 
 with st.sidebar:
     st.header("Dataset & model")
@@ -77,19 +77,19 @@ with left:
     # beneath the longer model-comparison section.
     if check:
         st.markdown("---")
-        st.subheader("Email ka result")
+        st.subheader("Email check result")
         if not email_text.strip():
-            st.info("Pehle upar email ka subject aur message paste karein, phir **Check email** dabayein.")
+            st.info("Paste the email subject and message above, then click **Check email**.")
         else:
             prediction = int(artifact["models"][model_choice].predict([email_text])[0])
             if prediction:
-                st.error("🚨 **Yeh email suspicious / fake lag rahi hai.**")
+                st.error("🚨 **This email appears suspicious or fake.**")
                 st.write(f"Selected model: **{model_choice}**")
-                st.warning("Link ya attachment na kholein. Sender ko official website ya known phone number se verify karein.")
+                st.warning("Do not open links or attachments. Verify the sender using an official website or a known phone number.")
             else:
-                st.success("✅ **Yeh email likely genuine lag rahi hai.**")
+                st.success("✅ **This email appears likely to be legitimate.**")
                 st.write(f"Selected model: **{model_choice}**")
-                st.warning("Yeh sirf ML model ka estimate hai, safety guarantee nahi. Sender address aur links phir bhi check karein.")
+                st.warning("This is a model prediction, not a guarantee of safety. Check the sender's address and links before taking action.")
 
 with right:
     st.subheader("All model results")
