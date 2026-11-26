@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import importlib
 import joblib
 import streamlit as st
 
-from train_model import MODEL_FILE, train
+import train_model
+train_model = importlib.reload(train_model)
+MODEL_FILE, train = train_model.MODEL_FILE, train_model.train
 
 st.set_page_config(page_title="EmailShield | Fake Email Detector", page_icon="✉️", layout="wide")
 st.markdown("""
