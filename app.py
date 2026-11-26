@@ -96,6 +96,14 @@ with left:
                 st.write(f"Selected model: **{model_choice}**")
                 st.warning("This is a model prediction, not a guarantee of safety. Check the sender's address and links before taking action.")
 
+            # Logistic Regression supplies a probability estimate for every email,
+            # including when the selected classifier has no probability method.
+            probability_model = artifact["models"]["Logistic Regression"]
+            suspicious_probability = probability_model.predict_proba([email_text])[0][1] * 100
+            st.metric("Estimated suspicious chance", f"{suspicious_probability:.1f}%")
+            st.progress(float(suspicious_probability / 100))
+            st.caption("Chance estimated by Logistic Regression. It can differ from the selected model's verdict and is not a guarantee.")
+
 with right:
     st.subheader("All model results")
     accuracy_frame = __import__("pandas").DataFrame(
