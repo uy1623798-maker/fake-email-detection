@@ -86,8 +86,12 @@ with left:
         if not email_text.strip():
             st.info("Paste the email subject and message above, then click **Check email**.")
         else:
+            probability_model = artifact["models"]["Logistic Regression"]
+            features = probability_model.named_steps["tfidf"].transform([email_text])
             prediction = int(artifact["models"][model_choice].predict([email_text])[0])
-            if prediction:
+            if features.nnz == 0:
+                st.warning("This email contains no words recognized by the model. Please paste the complete subject and message; the result may be unreliable.")
+            elif prediction:
                 st.error("🚨 **This email appears suspicious or fake.**")
                 st.write(f"Selected model: **{model_choice}**")
                 st.warning("Do not open links or attachments. Verify the sender using an official website or a known phone number.")
@@ -96,16 +100,15 @@ with left:
                 st.write(f"Selected model: **{model_choice}**")
                 st.warning("This is a model prediction, not a guarantee of safety. Check the sender's address and links before taking action.")
 
-            # Logistic Regression supplies a probability estimate for every email,
-            # including when the selected classifier has no probability method.
-            probability_model = artifact["models"]["Logistic Regression"]
-            suspicious_probability = probability_model.predict_proba([email_text])[0][1] * 100
-            st.metric("Estimated suspicious chance", f"{suspicious_probability:.1f}%")
-            st.progress(float(suspicious_probability / 100))
-            st.caption("Chance estimated by Logistic Regression. It can differ from the selected model's verdict and is not a guarantee.")
+            if features.nnz:
+                suspicious_probability = probability_model.predict_proba([email_text])[0][1] * 100
+                st.metric("This email: suspicious score", f"{suspicious_probability:.2f}%")
+                st.progress(float(suspicious_probability / 100))
+                st.caption("This score is calculated from this email by Logistic Regression; it may differ from the selected model's verdict. It is not a verified probability or a guarantee.")
 
 with right:
-    st.subheader("All model results")
+    st.subheader("Model test accuracy")
+    st.caption("These scores describe each model on the same test dataset. They do not change with the email you enter.")
     accuracy_frame = __import__("pandas").DataFrame(
         {"Algorithm": list(artifact["accuracies"].keys()), "Accuracy (%)": list(artifact["accuracies"].values())}
     ).sort_values("Accuracy (%)", ascending=False).set_index("Algorithm")
@@ -114,7 +117,7 @@ with right:
     st.caption("Accuracy is measured on the held-out 25% test split from the CSV dataset.")
 
 st.subheader("Supervised model accuracy")
-st.caption(f"{len(artifact['accuracies'])} algorithms trained on the same held-out 25% test split.")
+st.caption(f"{len(artifact['accuracies'])} algorithms evaluated on the same held-out 25% test split. These test scores stay the same for different emails.")
 accuracy_items = list(artifact["accuracies"].items())
 for row_start in range(0, len(accuracy_items), 4):
     metric_cols = st.columns(4)
